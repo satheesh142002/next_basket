@@ -1,6 +1,8 @@
+import os
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 
 from .core.database import connect_db, close_db
 from .core.config import get_settings
@@ -11,9 +13,13 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await connect_db()
-    await _seed_default_data()
-    await _seed_dataset()
+    is_vercel = os.getenv("VERCEL") == "1"
+    await connect_db(create_indexes=not is_vercel)
+    if not is_vercel:
+        await _seed_default_data()
+        await _seed_dataset()
+    else:
+        print("Skipping database indexes and demo-data seeding on Vercel startup")
     yield
     await close_db()
 

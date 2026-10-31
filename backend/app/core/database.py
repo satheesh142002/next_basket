@@ -7,10 +7,13 @@ client: AsyncIOMotorClient = None
 db = None
 
 
-async def connect_db():
+async def connect_db(create_indexes: bool = True):
     global client, db
     client = AsyncIOMotorClient(settings.mongo_url)
     db = client[settings.db_name]
+    if not create_indexes:
+        return
+
     # Create indexes
     await db.users.create_index("username", unique=True)
     await db.users.create_index("email", unique=True)

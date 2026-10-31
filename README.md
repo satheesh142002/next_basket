@@ -166,6 +166,13 @@ The root `vercel.json` configures two services: `backend` (FastAPI) and
 paths are routed to the frontend. The frontend calls the API using the
 same-origin `/api` path, which matches the backend's `/api` routes.
 
+On Vercel, backend startup creates the MongoDB client without making database
+network requests, creating indexes, or seeding demo data. This lets the
+serverless function start independently of Atlas availability; API requests
+still require a valid, reachable MongoDB instance. The health endpoint checks
+the API process only. Customers should register through the app unless sample
+data has been seeded into the production database separately.
+
 Connect the repository to Vercel and configure these environment variables for
 the backend service in the Vercel project settings:
 
@@ -181,7 +188,7 @@ out of the repository.
 
 ## Default Dataset — Sample Superstore
 
-On first startup, the backend automatically seeds MongoDB with the **Sample Superstore** dataset ([Kaggle](https://www.kaggle.com/datasets/bravehart101/sample-superstore-dataset)), the same dataset used in the original project report for ARIMA sales forecasting.
+On first local startup, the backend automatically seeds MongoDB with the **Sample Superstore** dataset ([Kaggle](https://www.kaggle.com/datasets/bravehart101/sample-superstore-dataset)), the same dataset used in the original project report for ARIMA sales forecasting. Vercel deployments skip automatic seeding; see [Deploying to Vercel](#deploying-to-vercel).
 
 ### What gets seeded
 
