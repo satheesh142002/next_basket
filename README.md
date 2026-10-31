@@ -164,7 +164,9 @@ Use these credentials to log in as admin:
 The root `vercel.json` configures two services: `backend` (FastAPI) and
 `frontend` (Vite). Requests under `/api/` are routed to the backend; all other
 paths are routed to the frontend. The frontend calls the API using the
-same-origin `/api` path, which matches the backend's `/api` routes.
+same-origin `/api` path, which matches the backend's `/api` routes. The
+frontend service rewrites client-side routes (such as `/login`) to
+`index.html`, so directly opening or refreshing an app route works.
 
 On Vercel, backend startup creates the MongoDB client without making database
 network requests, creating indexes, or seeding demo data. This lets the
