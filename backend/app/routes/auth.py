@@ -1,13 +1,16 @@
+import logging
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import datetime
+from pymongo.errors import PyMongoError
 
 from ..core.database import get_db
 from ..core.security import hash_password, verify_password, create_access_token
 from ..models.user import UserCreate, TokenResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/register", status_code=201)
@@ -48,7 +51,18 @@ async def login(role: Optional[str] = None, form_data: OAuth2PasswordRequestForm
     db = get_db()
     deny = HTTPException(status_code=401, detail="Incorrect username or password")
 
-    user = await db.users.find_one({"username": form_data.username})
+    try:
+        user = await db.users.find_one({"username": form_data.username})
+    except PyMongoError as exc:
+        logger.error("Login database lookup failed (%s)", type(exc).__name__)
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": "database_unavailable",
+                "message": "Login is temporarily unavailable because the database cannot be reached.",
+            },
+        ) from exc
+
     if not user or not verify_password(form_data.password, user["password"]):
         raise deny
     # A role-specific login page only accepts accounts of that role

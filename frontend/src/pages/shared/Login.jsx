@@ -39,7 +39,12 @@ export default function Login() {
       const dest = role === 'admin' ? '/admin' : role === 'seller' ? '/seller' : '/shop'
       navigate(dest)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed')
+      const detail = err.response?.data?.detail
+      setError(
+        typeof detail === 'string'
+          ? detail
+          : detail?.message || err.response?.data?.message || 'Login failed',
+      )
     } finally {
       setLoading(false)
     }
