@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #ffffff;
+  color: #262626;
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-white hover:bg-black;
+  }
+  .btn-secondary {
+    @apply btn bg-gray-200 text-gray-800 hover:bg-gray-300;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .btn-success {
+    @apply btn bg-green-600 text-white hover:bg-green-700;
+  }
+  .btn-blue {
+    @apply btn bg-blue-600 text-white hover:bg-blue-700 font-semibold;
+  }
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent;
+  }
+  .card {
+    @apply bg-white rounded-lg shadow-md border border-gray-100 p-6;
+  }
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-green {
+    @apply badge bg-green-100 text-green-800;
+  }
+  .badge-red {
+    @apply badge bg-red-100 text-red-800;
+  }
+  .badge-yellow {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+  .badge-blue {
+    @apply badge bg-brand-100 text-brand-800;
+  }
+
+  /* ── Report-style UI ─────────────────────────────────────────── */
+  .hero-bg {
+    background: linear-gradient(180deg, #e3b02a 0%, #f0c239 45%, #ffffff 100%);
+  }
+  .nav-trapezoid {
+    clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+  }
+  .page-title {
+    @apply text-center text-base font-normal text-ink mb-4;
+  }
+  .form-card {
+    @apply bg-white shadow-lg px-3 py-3 w-full max-w-[28.5rem] mx-auto;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.85), 0 2px 12px rgba(0, 0, 0, 0.12);
+  }
+  .form-card h1, .form-card h2 {
+    @apply text-base font-normal mb-3;
+  }
+  .form-row {
+    @apply grid grid-cols-2 gap-4 items-center mb-3;
+  }
+  .form-row > label {
+    @apply text-xs text-gray-600;
+  }
+  .form-input {
+    @apply w-full px-2 py-1.5 border border-gray-300 text-sm bg-white focus:outline-none focus:border-gray-500;
+  }
+  .btn-form {
+    @apply w-full border border-gray-400 bg-gray-100 text-sm py-1 hover:bg-gray-200 disabled:opacity-50;
+  }
+  .table-yellow {
+    @apply w-full text-sm border border-gray-200;
+  }
+  .table-yellow thead {
+    background: #ffcd32;
+  }
+  .table-yellow th {
+    @apply text-left font-semibold px-3 py-2 text-ink;
+  }
+  .table-yellow td {
+    @apply px-3 py-2 text-gray-600 border-t border-gray-100;
+  }
+  .table-yellow tbody tr:nth-child(even) {
+    background: #f2f2f2;
+  }
+  .table-dark {
+    @apply w-full text-sm;
+  }
+  .table-dark thead {
+    background: #1f2125;
+    color: #fff;
+  }
+  .table-dark th {
+    @apply font-semibold px-3 py-2 text-center;
+  }
+  .table-dark td {
+    @apply px-3 py-2 text-gray-600 text-center;
+  }
+}

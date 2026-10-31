@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 400" role="img" aria-label="Shopping basket with sales forecast chart">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ea6a1f" stop-opacity=".35"/><stop offset="1" stop-color="#ea6a1f" stop-opacity="0"/></linearGradient>
+  </defs>
+  <circle cx="240" cy="210" r="170" fill="#ffffff" opacity=".18"/>
+  <circle cx="240" cy="210" r="120" fill="#ffffff" opacity=".18"/>
+  <!-- chart card -->
+  <rect x="40" y="40" width="230" height="130" rx="14" fill="#fff" stroke="#262626" stroke-width="4"/>
+  <line x1="62" y1="140" x2="250" y2="140" stroke="#d1d5db" stroke-width="3"/>
+  <line x1="62" y1="110" x2="250" y2="110" stroke="#e5e7eb" stroke-width="2"/>
+  <line x1="62" y1="80" x2="250" y2="80" stroke="#e5e7eb" stroke-width="2"/>
+  <path d="M62 128 L100 112 L135 120 L170 92 L205 98 L250 62 L250 140 L62 140 Z" fill="url(#g)"/>
+  <path d="M62 128 L100 112 L135 120 L170 92" fill="none" stroke="#262626" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M170 92 L205 98 L250 62" fill="none" stroke="#ea6a1f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 10"/>
+  <circle cx="250" cy="62" r="7" fill="#ea6a1f" stroke="#262626" stroke-width="3"/>
+  <!-- tree card -->
+  <rect x="300" y="70" width="140" height="110" rx="14" fill="#fff" stroke="#262626" stroke-width="4"/>
+  <circle cx="370" cy="95" r="10" fill="#f2b92a" stroke="#262626" stroke-width="3"/>
+  <line x1="370" y1="105" x2="338" y2="130" stroke="#262626" stroke-width="3"/><line x1="370" y1="105" x2="402" y2="130" stroke="#262626" stroke-width="3"/>
+  <circle cx="338" cy="136" r="9" fill="#4a7fd1" stroke="#262626" stroke-width="3"/><circle cx="402" cy="136" r="9" fill="#3aa66f" stroke="#262626" stroke-width="3"/>
+  <line x1="338" y1="145" x2="322" y2="164" stroke="#262626" stroke-width="3"/><line x1="338" y1="145" x2="354" y2="164" stroke="#262626" stroke-width="3"/>
+  <!-- basket -->
+  <path d="M110 260 L370 260 L340 360 Q336 372 322 372 L158 372 Q144 372 140 360 Z" fill="#c98b4a" stroke="#262626" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M170 262 L180 366 M240 262 L240 370 M310 262 L300 366" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round"/>
+  <path d="M135 300 L345 300" stroke="#8a5a2b" stroke-width="5"/>
+  <path d="M150 262 Q240 150 330 262" fill="none" stroke="#262626" stroke-width="7" stroke-linecap="round"/>
+  <!-- items -->
+  <rect x="150" y="218" width="46" height="46" rx="6" fill="#4a7fd1" stroke="#262626" stroke-width="4"/>
+  <rect x="164" y="232" width="18" height="6" fill="#fff"/>
+  <rect x="205" y="200" width="40" height="64" rx="8" fill="#2f3a46" stroke="#262626" stroke-width="4"/>
+  <rect x="211" y="208" width="28" height="40" rx="3" fill="#6fb1e8"/>
+  <path d="M258 264 L258 232 Q258 214 276 214 Q294 214 294 232 L294 264 Z" fill="#f2b92a" stroke="#262626" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="302" y="226" width="38" height="38" rx="4" fill="#e45b4f" stroke="#262626" stroke-width="4"/>
+  <circle cx="440" cy="250" r="26" fill="#ffd84d" stroke="#262626" stroke-width="4"/>
+  <text x="440" y="259" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-weight="700" font-size="26" fill="#262626">%</text>
+</svg>
