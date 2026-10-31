@@ -177,9 +177,9 @@ frontend service rewrites client-side routes (such as `/login`) to
 On Vercel, backend startup creates the MongoDB client without making database
 network requests, creating indexes, or seeding demo data. This lets the
 serverless function start independently of Atlas availability; API requests
-still require a valid, reachable MongoDB instance. The health endpoint checks
-the API process only. Customers should register through the app unless sample
-data has been seeded into the production database separately.
+still require a valid, reachable MongoDB instance. Customers should register
+through the app unless sample data has been seeded into the production database
+separately.
 
 Connect the repository to Vercel and configure these environment variables for
 the backend service in the Vercel project settings:
@@ -195,12 +195,13 @@ variables when needed. To create a production admin, configure the same
 database used by the deployment. Keep database credentials and secrets out of
 the repository.
 
-To test the deployed MongoDB connection, sign in as an admin to obtain a
-bearer token and call `GET /api/admin/health/database` with
-`Authorization: Bearer <token>`. A successful response is
-`{"status":"ok","database":"connected"}`. A failed ping returns HTTP 503 with a
-safe error type and troubleshooting message; the full exception is recorded in
-the backend function logs. The endpoint does not return database credentials.
+Check the API and MongoDB with the normal, public `GET /api/health` endpoint.
+Open `https://<your-deployment-domain>/api/health` in a browser. It actively
+pings MongoDB and returns `{"status":"ok","api":"ok","database":"connected"}`
+when both are available. If MongoDB is unavailable, it returns HTTP 503 with
+`"database":"disconnected"`, a safe error type, and a troubleshooting message.
+The full exception is recorded in the backend function logs; credentials are
+never returned.
 
 ## Default Dataset — Sample Superstore
 

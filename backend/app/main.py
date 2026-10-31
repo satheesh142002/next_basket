@@ -1,14 +1,17 @@
 import os
+import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pymongo.errors import PyMongoError
 
-from .core.database import connect_db, close_db
+from .core.database import connect_db, close_db, ping_database
 from .core.config import get_settings
 from .routes import auth, admin, products, cart, orders, seller, customer
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -80,4 +83,41 @@ app.include_router(customer.router, prefix="/api")
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "version": "1.0.0"}
+    try:
+        await ping_database()
+    except RuntimeError as exc:
+        logger.error("MongoDB health check could not run: %s", exc)
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "error",
+                "api": "ok",
+                "database": "disconnected",
+                "error_type": type(exc).__name__,
+                "version": "1.0.0",
+                "message": "MongoDB client is not initialized. Check backend startup.",
+            },
+        ) from exc
+    except PyMongoError as exc:
+        logger.exception("MongoDB health check failed")
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "error",
+                "api": "ok",
+                "database": "disconnected",
+                "error_type": type(exc).__name__,
+                "version": "1.0.0",
+                "message": (
+                    "MongoDB ping failed. Check the backend MONGO_URL, "
+                    "database credentials, and Atlas Network Access."
+                ),
+            },
+        ) from exc
+
+    return {
+        "status": "ok",
+        "api": "ok",
+        "database": "connected",
+        "version": "1.0.0",
+    }
