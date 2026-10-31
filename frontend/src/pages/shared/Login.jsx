@@ -7,9 +7,7 @@ import { useAuth } from '../../context/AuthContext'
 const DEMO = {
   admin: { username: 'admin', password: 'admin123' },
   customer: { username: 'claire_gute_cg12520', password: 'customer123' },
-  'seller (furniture)': { username: 'furniture_seller', password: 'seller123' },
-  'seller (office supplies)': { username: 'office_seller', password: 'seller123' },
-  'seller (technology)': { username: 'tech_seller', password: 'seller123' },
+  seller: { username: 'furniture_seller', password: 'seller123' },
 }
 const TITLES = { admin: 'E-Commerce Admin Login', seller: 'Seller Login', customer: 'Customer Login' }
 const WELCOME = {
@@ -85,18 +83,27 @@ export default function Login() {
 
           <div className="mt-4 border-t border-gray-200 pt-3">
             <p className="text-xs font-semibold text-ink mb-2">
-              {wanted === 'admin' ? 'Admin demo account' : 'Demo users (click to fill)'}
+              {wanted ? `${wanted[0].toUpperCase()}${wanted.slice(1)} demo account` : 'Demo users (click to fill)'}
             </p>
             <table className="w-full text-xs">
               <thead><tr className="text-left text-gray-500"><th className="font-normal">Role</th><th className="font-normal">User ID</th><th className="font-normal">Password</th></tr></thead>
               <tbody>
                 {Object.entries(DEMO).filter(([r]) => (
-                  wanted === 'admin' ? r === 'admin' : !wanted ? r !== 'admin' : r.startsWith(wanted)
+                  !wanted || r === wanted
                 )).map(([r, d]) => (
                   <tr
                     key={r}
                     className="cursor-pointer hover:bg-brand-50"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => { setUsername(d.username); setPassword(d.password) }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        setUsername(d.username)
+                        setPassword(d.password)
+                      }
+                    }}
                   >
                     <td className="py-1 capitalize">{r}</td>
                     <td className="font-mono">{d.username}</td>
@@ -107,7 +114,7 @@ export default function Login() {
             </table>
             {wanted === 'admin' && (
               <p className="text-[11px] text-gray-500 mt-1">
-                This works only if the matching admin account exists in the connected database.
+                Admin login works only if this account exists in the connected database with this password.
               </p>
             )}
             {wanted !== 'admin' && (
