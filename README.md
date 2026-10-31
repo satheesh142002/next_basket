@@ -159,6 +159,26 @@ Use these credentials to log in as admin:
 
 (Configure these in `backend/.env`)
 
+## Deploying to Vercel
+
+The root `vercel.json` configures two services: `backend` (FastAPI) and
+`frontend` (Vite). Requests under `/api/` are routed to the backend; all other
+paths are routed to the frontend. The frontend calls the API using the
+same-origin `/api` path, which matches the backend's `/api` routes.
+
+Connect the repository to Vercel and configure these environment variables for
+the backend service in the Vercel project settings:
+
+- `MONGO_URL`: a reachable MongoDB Atlas connection string; the local MongoDB
+  default is not available in a Vercel deployment.
+- `SECRET_KEY`: a unique, secure value for signing authentication tokens.
+- `ADMIN_PASSWORD`: set a secure admin password instead of the development
+  default.
+
+`DB_NAME`, `ADMIN_USERNAME`, and other backend settings can also be configured
+as environment variables when needed. Keep database credentials and secrets
+out of the repository.
+
 ## Default Dataset — Sample Superstore
 
 On first startup, the backend automatically seeds MongoDB with the **Sample Superstore** dataset ([Kaggle](https://www.kaggle.com/datasets/bravehart101/sample-superstore-dataset)), the same dataset used in the original project report for ARIMA sales forecasting.
