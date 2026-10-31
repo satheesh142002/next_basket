@@ -8,8 +8,6 @@ class Settings(BaseSettings):
     secret_key: str = "change_me_in_production"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
-    admin_username: str = "admin"
-    admin_password: str = "admin123"
 
     class Config:
         env_file = ".env"

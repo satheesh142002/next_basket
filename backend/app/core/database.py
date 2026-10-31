@@ -9,7 +9,11 @@ db = None
 
 async def connect_db(create_indexes: bool = True):
     global client, db
-    client = AsyncIOMotorClient(settings.mongo_url)
+    client = AsyncIOMotorClient(
+        settings.mongo_url,
+        connectTimeoutMS=5000,
+        serverSelectionTimeoutMS=5000,
+    )
     db = client[settings.db_name]
     if not create_indexes:
         return
@@ -25,6 +29,12 @@ async def connect_db(create_indexes: bool = True):
     await db.user_searches.create_index("customer_username")
     await db.reviews.create_index("product_id")
     print("✅ Connected to MongoDB")
+
+
+async def ping_database():
+    if client is None:
+        raise RuntimeError("MongoDB client has not been initialized")
+    await client.admin.command("ping")
 
 
 async def close_db():

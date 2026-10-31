@@ -1,13 +1,16 @@
 """
 Test the /ml/train SSE endpoint — reads the event stream and prints progress.
 """
-import httpx, json, time
+import httpx, json, os, time
 
 BASE  = "http://localhost:8000/api"
 client = httpx.Client(timeout=120.0)
+admin_username = os.environ.get("TEST_ADMIN_USERNAME")
+admin_password = os.environ.get("TEST_ADMIN_PASSWORD")
+if not admin_username or not admin_password:
+    raise SystemExit("Set TEST_ADMIN_USERNAME and TEST_ADMIN_PASSWORD for an existing admin account.")
 
-# Login as admin
-r = client.post(f"{BASE}/auth/login", data={"username": "admin", "password": "admin123"})
+r = client.post(f"{BASE}/auth/login", data={"username": admin_username, "password": admin_password})
 assert r.status_code == 200, f"Login failed: {r.text}"
 token = r.json()["access_token"]
 AH = {"Authorization": f"Bearer {token}"}

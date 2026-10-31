@@ -5,9 +5,8 @@ import { authAPI } from '../../api'
 import { useAuth } from '../../context/AuthContext'
 
 const DEMO = {
-  customer: { username: 'test', password: 'test123' },
-  seller: { username: 'seller', password: 'seller123' },
-  admin: { username: 'admin', password: 'admin123' },
+  customer: { username: 'claire_gute_cg12520', password: 'customer123' },
+  seller: { username: 'furniture_seller', password: 'seller123' },
 }
 const TITLES = { admin: 'E-Commerce Admin Login', seller: 'Seller Login', customer: 'Customer Login' }
 const WELCOME = {
@@ -75,11 +74,17 @@ export default function Login() {
             <button type="button" onClick={() => setShowPwd(v => !v)} className="absolute right-2 top-1.5 text-xs text-gray-500" aria-label="Show password">{showPwd ? '🙈' : '👁'}</button>
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full text-sm">{loading ? 'Signing in...' : 'Login'}</button>
-          <p className="text-xs text-gray-500 text-center mt-3">
-            New here? <Link to={`/register${wanted === 'seller' ? '?role=seller' : ''}`} className="text-brand-600 hover:underline">Register</Link>
-          </p>
+          {wanted !== 'admin' && (
+            <p className="text-xs text-gray-500 text-center mt-3">
+              New here? <Link to={`/register${wanted === 'seller' ? '?role=seller' : ''}`} className="text-brand-600 hover:underline">Register</Link>
+            </p>
+          )}
 
-          <div className="mt-4 border-t border-gray-200 pt-3">
+          {wanted === 'admin' ? (
+            <p className="mt-4 border-t border-gray-200 pt-3 text-xs text-gray-500">
+              Admin accounts must be created by an operator.
+            </p>
+          ) : <div className="mt-4 border-t border-gray-200 pt-3">
             <p className="text-xs font-semibold text-ink mb-2">Demo users (click to fill)</p>
             <table className="w-full text-xs">
               <thead><tr className="text-left text-gray-500"><th className="font-normal">Role</th><th className="font-normal">User ID</th><th className="font-normal">Password</th></tr></thead>
@@ -92,7 +97,7 @@ export default function Login() {
               </tbody>
             </table>
             {!wanted && <p className="text-[11px] text-gray-400 mt-2">Use the Customer, Seller or Admin links above for a role-specific login.</p>}
-          </div>
+          </div>}
         </form>
       </div>
     </div>

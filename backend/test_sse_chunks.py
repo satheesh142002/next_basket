@@ -1,10 +1,15 @@
 """Verify SSE events arrive as separate chunks (not one big blob)."""
-import httpx, time, json
+import httpx, os, time, json
 
 BASE  = "http://localhost:8000/api"
 c     = httpx.Client(timeout=120.0)
 
-r = c.post(f"{BASE}/auth/login", data={"username": "admin", "password": "admin123"})
+admin_username = os.environ.get("TEST_ADMIN_USERNAME")
+admin_password = os.environ.get("TEST_ADMIN_PASSWORD")
+if not admin_username or not admin_password:
+    raise SystemExit("Set TEST_ADMIN_USERNAME and TEST_ADMIN_PASSWORD for an existing admin account.")
+
+r = c.post(f"{BASE}/auth/login", data={"username": admin_username, "password": admin_password})
 token = r.json()["access_token"]
 AH = {"Authorization": f"Bearer {token}", "Accept": "text/event-stream"}
 

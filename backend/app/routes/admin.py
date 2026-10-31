@@ -1,14 +1,18 @@
+import logging
+
 from fastapi import APIRouter, HTTPException, Depends
 from bson import ObjectId
 from datetime import datetime
+from pymongo.errors import PyMongoError
 from typing import List, Optional
 
-from ..core.database import get_db
+from ..core.database import get_db, ping_database
 from ..core.security import require_role
 from ..models.user import SellerApproval
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 admin_only = require_role("admin")
+logger = logging.getLogger(__name__)
 
 
 def _serialize(doc: dict) -> dict:
@@ -18,6 +22,37 @@ def _serialize(doc: dict) -> dict:
 
 
 # ── Dashboard Stats ──────────────────────────────────────────────────────────
+
+@router.get("/health/database")
+async def database_health(_=Depends(admin_only)):
+    try:
+        await ping_database()
+    except RuntimeError as exc:
+        logger.error("MongoDB health check could not run: %s", exc)
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "error",
+                "error_type": type(exc).__name__,
+                "message": "MongoDB client is not initialized. Check backend startup.",
+            },
+        ) from exc
+    except PyMongoError as exc:
+        logger.exception("MongoDB health check failed")
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "error",
+                "error_type": type(exc).__name__,
+                "message": (
+                    "MongoDB ping failed. Check the backend MONGO_URL, "
+                    "database credentials, and Atlas Network Access."
+                ),
+            },
+        ) from exc
+
+    return {"status": "ok", "database": "connected"}
+
 
 @router.get("/stats")
 async def get_stats(_=Depends(admin_only)):

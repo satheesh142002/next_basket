@@ -4,11 +4,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from datetime import datetime
 
 from ..core.database import get_db
-from ..core.security import hash_password, verify_password, create_access_token, get_settings
+from ..core.security import hash_password, verify_password, create_access_token
 from ..models.user import UserCreate, TokenResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-settings = get_settings()
 
 
 @router.post("/register", status_code=201)
@@ -48,22 +47,6 @@ async def register(user_in: UserCreate):
 async def login(role: Optional[str] = None, form_data: OAuth2PasswordRequestForm = Depends()):
     db = get_db()
     deny = HTTPException(status_code=401, detail="Incorrect username or password")
-
-    # Admin shortcut
-    if role not in (None, "admin") and form_data.username == settings.admin_username:
-        raise deny
-    if (
-        role in (None, "admin")
-        and form_data.username == settings.admin_username
-        and form_data.password == settings.admin_password
-    ):
-        token = create_access_token({"sub": form_data.username, "role": "admin"})
-        return TokenResponse(
-            access_token=token,
-            role="admin",
-            username=form_data.username,
-            name="Administrator",
-        )
 
     user = await db.users.find_one({"username": form_data.username})
     if not user or not verify_password(form_data.password, user["password"]):

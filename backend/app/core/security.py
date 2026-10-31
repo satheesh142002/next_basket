@@ -55,11 +55,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     if not username:
         raise HTTPException(status_code=401, detail="Invalid token payload")
     db = get_db()
-    if role == "admin":
-        return {"username": username, "role": "admin"}
     user = await db.users.find_one({"username": username})
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
+    if role != user["role"]:
+        raise HTTPException(status_code=401, detail="Invalid token role")
     if not user.get("is_active", True):
         raise HTTPException(status_code=403, detail="Account is deactivated")
     return {"username": username, "role": user["role"], "id": str(user["_id"])}

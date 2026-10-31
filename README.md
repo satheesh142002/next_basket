@@ -151,13 +151,19 @@ npm run dev
 
 The frontend will be available at `http://localhost:5173`.
 
-### 3. Default Admin Account
+### 3. Create an Admin Account
 
-Use these credentials to log in as admin:
-- **Username**: `admin`
-- **Password**: `admin123`
+Admin accounts are stored in MongoDB like other users; there is no built-in
+admin password. With the backend environment configured in `backend/.env`,
+create the first admin interactively:
 
-(Configure these in `backend/.env`)
+```bash
+cd backend
+python create_admin.py
+```
+
+The script prompts for the account details and password, stores only a
+password hash, and refuses to overwrite an existing account.
 
 ## Deploying to Vercel
 
@@ -181,12 +187,20 @@ the backend service in the Vercel project settings:
 - `MONGO_URL`: a reachable MongoDB Atlas connection string; the local MongoDB
   default is not available in a Vercel deployment.
 - `SECRET_KEY`: a unique, secure value for signing authentication tokens.
-- `ADMIN_PASSWORD`: set a secure admin password instead of the development
-  default.
 
-`DB_NAME`, `ADMIN_USERNAME`, and other backend settings can also be configured
-as environment variables when needed. Keep database credentials and secrets
-out of the repository.
+`DB_NAME` and other backend settings can also be configured as environment
+variables when needed. To create a production admin, configure the same
+`MONGO_URL` and `DB_NAME` locally in the untracked `backend/.env`, then run
+`python create_admin.py` from `backend/`. This creates the account in the
+database used by the deployment. Keep database credentials and secrets out of
+the repository.
+
+To test the deployed MongoDB connection, sign in as an admin to obtain a
+bearer token and call `GET /api/admin/health/database` with
+`Authorization: Bearer <token>`. A successful response is
+`{"status":"ok","database":"connected"}`. A failed ping returns HTTP 503 with a
+safe error type and troubleshooting message; the full exception is recorded in
+the backend function logs. The endpoint does not return database credentials.
 
 ## Default Dataset — Sample Superstore
 
@@ -542,7 +556,7 @@ The seller's bulk `/api/seller/alerts` endpoint is a separate, faster calculatio
 1. **Start MongoDB**, then the backend (`uvicorn`), then the frontend (`npm run dev`)
 2. On first startup, the backend auto-seeds ~10K records from the Sample Superstore dataset (see above)
 3. Open `http://localhost:5173`
-4. Login as admin (`admin` / `admin123`) to view platform-wide stats and manage sellers
+4. Create an admin account with `python create_admin.py`, then log in to view platform-wide stats and manage sellers
 5. Login as a seller (e.g. `furniture_seller` / `seller123`) to view stock forecasts, alerts, and analytics
 6. Login as a customer (e.g. `claire_gute_cg12520` / `customer123`) to browse, shop, and see recommendations
 7. The ML recommendation model is auto-trained during seeding — trigger retraining from Admin → ML page after new orders
@@ -557,8 +571,6 @@ DB_NAME=next_basket
 SECRET_KEY=change_this_in_production
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin123
 ```
 
 For MongoDB Atlas, use the connection string provided by Atlas instead of the local URI. For example:
