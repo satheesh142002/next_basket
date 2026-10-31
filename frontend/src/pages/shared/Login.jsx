@@ -6,7 +6,9 @@ import { useAuth } from '../../context/AuthContext'
 
 const DEMO = {
   customer: { username: 'claire_gute_cg12520', password: 'customer123' },
-  seller: { username: 'furniture_seller', password: 'seller123' },
+  'seller (furniture)': { username: 'furniture_seller', password: 'seller123' },
+  'seller (office supplies)': { username: 'office_seller', password: 'seller123' },
+  'seller (technology)': { username: 'tech_seller', password: 'seller123' },
 }
 const TITLES = { admin: 'E-Commerce Admin Login', seller: 'Seller Login', customer: 'Customer Login' }
 const WELCOME = {
@@ -80,24 +82,36 @@ export default function Login() {
             </p>
           )}
 
-          {wanted === 'admin' ? (
-            <p className="mt-4 border-t border-gray-200 pt-3 text-xs text-gray-500">
-              Admin accounts must be created by an operator.
+          <div className="mt-4 border-t border-gray-200 pt-3">
+            <p className="text-xs font-semibold text-ink mb-2">
+              {wanted === 'admin' ? 'Demo customer and seller accounts' : 'Demo users (click to fill)'}
             </p>
-          ) : <div className="mt-4 border-t border-gray-200 pt-3">
-            <p className="text-xs font-semibold text-ink mb-2">Demo users (click to fill)</p>
             <table className="w-full text-xs">
               <thead><tr className="text-left text-gray-500"><th className="font-normal">Role</th><th className="font-normal">User ID</th><th className="font-normal">Password</th></tr></thead>
               <tbody>
-                {Object.entries(DEMO).filter(([r]) => !wanted || r === wanted).map(([r, d]) => (
-                  <tr key={r} className="cursor-pointer hover:bg-brand-50" onClick={() => { setUsername(d.username); setPassword(d.password) }}>
-                    <td className="py-1 capitalize">{r}</td><td className="font-mono">{d.username}</td><td className="font-mono">{d.password}</td>
+                {Object.entries(DEMO).filter(([r]) => !wanted || wanted === 'admin' || r.startsWith(wanted)).map(([r, d]) => (
+                  <tr
+                    key={r}
+                    className={wanted === 'admin' ? '' : 'cursor-pointer hover:bg-brand-50'}
+                    onClick={wanted === 'admin' ? undefined : () => { setUsername(d.username); setPassword(d.password) }}
+                  >
+                    <td className="py-1 capitalize">{r}</td>
+                    <td className="font-mono">{d.username}</td>
+                    <td className="font-mono">{d.password}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            <p className="text-[11px] text-gray-400 mt-2">
+              Demo accounts are available only when the sample dataset has been seeded in the connected database.
+            </p>
+            {wanted === 'admin' && (
+              <p className="text-[11px] text-gray-500 mt-1">
+                Admin accounts must be created by an operator.
+              </p>
+            )}
             {!wanted && <p className="text-[11px] text-gray-400 mt-2">Use the Customer, Seller or Admin links above for a role-specific login.</p>}
-          </div>}
+          </div>
         </form>
       </div>
     </div>
