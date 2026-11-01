@@ -2,17 +2,12 @@
 Quick SSE test — reads up to first 3 events then stops.
 This validates the stream works without waiting for full training.
 """
-import httpx, json, os, time, sys
+import httpx, json, time, sys
 
 BASE = "http://localhost:8000/api"
 c    = httpx.Client(timeout=30.0)
 
-admin_username = os.environ.get("TEST_ADMIN_USERNAME")
-admin_password = os.environ.get("TEST_ADMIN_PASSWORD")
-if not admin_username or not admin_password:
-    raise SystemExit("Set TEST_ADMIN_USERNAME and TEST_ADMIN_PASSWORD for an existing admin account.")
-
-r = c.post(f"{BASE}/auth/login", data={"username": admin_username, "password": admin_password})
+r = c.post(f"{BASE}/auth/login", data={"username": "admin", "password": "admin123"})
 assert r.status_code == 200
 token = r.json()["access_token"]
 AH = {"Authorization": f"Bearer {token}", "Accept": "text/event-stream"}

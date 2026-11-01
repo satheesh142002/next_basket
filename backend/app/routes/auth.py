@@ -1,16 +1,14 @@
-import logging
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import datetime
-from pymongo.errors import PyMongoError
 
 from ..core.database import get_db
-from ..core.security import hash_password, verify_password, create_access_token
+from ..core.security import hash_password, verify_password, create_access_token, get_settings
 from ..models.user import UserCreate, TokenResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-logger = logging.getLogger(__name__)
+settings = get_settings()
 
 
 @router.post("/register", status_code=201)
@@ -51,18 +49,23 @@ async def login(role: Optional[str] = None, form_data: OAuth2PasswordRequestForm
     db = get_db()
     deny = HTTPException(status_code=401, detail="Incorrect username or password")
 
-    try:
-        user = await db.users.find_one({"username": form_data.username})
-    except PyMongoError as exc:
-        logger.error("Login database lookup failed (%s)", type(exc).__name__)
-        raise HTTPException(
-            status_code=503,
-            detail={
-                "error": "database_unavailable",
-                "message": "Login is temporarily unavailable because the database cannot be reached.",
-            },
-        ) from exc
+    # Admin shortcut
+    if role not in (None, "admin") and form_data.username == settings.admin_username:
+        raise deny
+    if (
+        role in (None, "admin")
+        and form_data.username == settings.admin_username
+        and form_data.password == settings.admin_password
+    ):
+        token = create_access_token({"sub": form_data.username, "role": "admin"})
+        return TokenResponse(
+            access_token=token,
+            role="admin",
+            username=form_data.username,
+            name="Administrator",
+        )
 
+    user = await db.users.find_one({"username": form_data.username})
     if not user or not verify_password(form_data.password, user["password"]):
         raise deny
     # A role-specific login page only accepts accounts of that role

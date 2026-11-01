@@ -19,7 +19,6 @@ def _serialize(doc: dict) -> dict:
 
 # ── Dashboard Stats ──────────────────────────────────────────────────────────
 
-
 @router.get("/stats")
 async def get_stats(_=Depends(admin_only)):
     db = get_db()
