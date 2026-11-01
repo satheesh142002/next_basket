@@ -5,9 +5,9 @@ import { authAPI } from '../../api'
 import { useAuth } from '../../context/AuthContext'
 
 const DEMO = {
+  customer: { username: 'test', password: 'test123' },
+  seller: { username: 'seller', password: 'seller123' },
   admin: { username: 'admin', password: 'admin123' },
-  customer: { username: 'claire_gute_cg12520', password: 'customer123' },
-  seller: { username: 'furniture_seller', password: 'seller123' },
 }
 const TITLES = { admin: 'E-Commerce Admin Login', seller: 'Seller Login', customer: 'Customer Login' }
 const WELCOME = {
@@ -75,53 +75,22 @@ export default function Login() {
             <button type="button" onClick={() => setShowPwd(v => !v)} className="absolute right-2 top-1.5 text-xs text-gray-500" aria-label="Show password">{showPwd ? '🙈' : '👁'}</button>
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full text-sm">{loading ? 'Signing in...' : 'Login'}</button>
-          {wanted !== 'admin' && (
-            <p className="text-xs text-gray-500 text-center mt-3">
-              New here? <Link to={`/register${wanted === 'seller' ? '?role=seller' : ''}`} className="text-brand-600 hover:underline">Register</Link>
-            </p>
-          )}
+          <p className="text-xs text-gray-500 text-center mt-3">
+            New here? <Link to={`/register${wanted === 'seller' ? '?role=seller' : ''}`} className="text-brand-600 hover:underline">Register</Link>
+          </p>
 
           <div className="mt-4 border-t border-gray-200 pt-3">
-            <p className="text-xs font-semibold text-ink mb-2">
-              {wanted ? `${wanted[0].toUpperCase()}${wanted.slice(1)} demo account` : 'Demo users (click to fill)'}
-            </p>
+            <p className="text-xs font-semibold text-ink mb-2">Demo users (click to fill)</p>
             <table className="w-full text-xs">
               <thead><tr className="text-left text-gray-500"><th className="font-normal">Role</th><th className="font-normal">User ID</th><th className="font-normal">Password</th></tr></thead>
               <tbody>
-                {Object.entries(DEMO).filter(([r]) => (
-                  !wanted || r === wanted
-                )).map(([r, d]) => (
-                  <tr
-                    key={r}
-                    className="cursor-pointer hover:bg-brand-50"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => { setUsername(d.username); setPassword(d.password) }}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault()
-                        setUsername(d.username)
-                        setPassword(d.password)
-                      }
-                    }}
-                  >
-                    <td className="py-1 capitalize">{r}</td>
-                    <td className="font-mono">{d.username}</td>
-                    <td className="font-mono">{d.password}</td>
+                {Object.entries(DEMO).filter(([r]) => !wanted || r === wanted).map(([r, d]) => (
+                  <tr key={r} className="cursor-pointer hover:bg-brand-50" onClick={() => { setUsername(d.username); setPassword(d.password) }}>
+                    <td className="py-1 capitalize">{r}</td><td className="font-mono">{d.username}</td><td className="font-mono">{d.password}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {wanted === 'admin' && (
-              <p className="text-[11px] text-gray-500 mt-1">
-                Admin login works only if this account exists in the connected database with this password.
-              </p>
-            )}
-            {wanted !== 'admin' && (
-              <p className="text-[11px] text-gray-400 mt-2">
-                Demo accounts are available only when the sample dataset has been seeded in the connected database.
-              </p>
-            )}
             {!wanted && <p className="text-[11px] text-gray-400 mt-2">Use the Customer, Seller or Admin links above for a role-specific login.</p>}
           </div>
         </form>
