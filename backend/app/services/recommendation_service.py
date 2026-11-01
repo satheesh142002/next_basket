@@ -21,6 +21,7 @@ import json
 import logging
 import os
 import pickle
+import tempfile
 from collections import defaultdict
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
@@ -35,10 +36,15 @@ from sklearn.tree import DecisionTreeClassifier
 logger = logging.getLogger(__name__)
 
 _DIR = os.path.dirname(__file__)
-MODEL_PATH      = os.path.normpath(os.path.join(_DIR, "../../ml_models/rec_model.pkl"))
-ENCODER_PATH    = os.path.normpath(os.path.join(_DIR, "../../ml_models/rec_encoder.pkl"))
-CATEGORIES_PATH = os.path.normpath(os.path.join(_DIR, "../../ml_models/categories.pkl"))
-METRICS_PATH    = os.path.normpath(os.path.join(_DIR, "../../ml_models/rec_metrics.json"))
+if os.getenv("VERCEL") == "1":
+    _MODEL_DIR = os.path.join(tempfile.gettempdir(), "next-basket-ml-models")
+else:
+    _MODEL_DIR = os.path.normpath(os.path.join(_DIR, "../../ml_models"))
+
+MODEL_PATH = os.path.join(_MODEL_DIR, "rec_model.pkl")
+ENCODER_PATH = os.path.join(_MODEL_DIR, "rec_encoder.pkl")
+CATEGORIES_PATH = os.path.join(_MODEL_DIR, "categories.pkl")
+METRICS_PATH = os.path.join(_MODEL_DIR, "rec_metrics.json")
 
 FEATURE_VERSION = 2
 
