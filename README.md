@@ -230,6 +230,11 @@ On first local startup, the backend automatically seeds MongoDB with the **Sampl
 | Customer (example) | `sean_odonnell_so20335` | `customer123` |
 
 All ~793 seeded customers use the password `customer123`. You can find their usernames by browsing the admin dashboard's customer list.
+The login page's customer and seller demo cards use seeded accounts. They are
+available locally after dataset seeding, but not on Vercel unless the sample
+dataset has been loaded into the production database. Admin accounts are
+created separately with `backend/create_admin.py`; there is no shared admin
+demo login.
 
 ### Re-seeding
 

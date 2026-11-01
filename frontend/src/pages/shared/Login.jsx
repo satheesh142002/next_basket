@@ -5,15 +5,26 @@ import { authAPI } from '../../api'
 import { useAuth } from '../../context/AuthContext'
 
 const DEMO = {
-  customer: { username: 'test', password: 'test123' },
-  seller: { username: 'seller', password: 'seller123' },
-  admin: { username: 'admin', password: 'admin123' },
+  customer: { username: 'claire_gute_cg12520', password: 'customer123' },
+  seller: { username: 'furniture_seller', password: 'seller123' },
 }
 const TITLES = { admin: 'E-Commerce Admin Login', seller: 'Seller Login', customer: 'Customer Login' }
 const WELCOME = {
   admin: 'Approve sellers, manage the platform and train the models.',
   seller: 'Manage products and orders and see ARIMA stock forecasts.',
   customer: 'Shop your favourite products and get next-basket picks.',
+}
+
+function getLoginErrorMessage(err) {
+  const detail = err.response?.data?.detail
+  if (typeof detail === 'string') return detail
+  if (typeof detail?.message === 'string') return detail.message
+  if (err.response?.status === 401) return 'Incorrect username or password.'
+  if (err.response?.status === 503) {
+    return 'Login is temporarily unavailable because the database cannot be reached.'
+  }
+  if (!err.response) return 'Unable to reach the login service. Please try again.'
+  return 'Login failed due to a server error. Please try again later.'
 }
 
 export default function Login() {
@@ -39,7 +50,7 @@ export default function Login() {
       const dest = role === 'admin' ? '/admin' : role === 'seller' ? '/seller' : '/shop'
       navigate(dest)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed')
+      setError(getLoginErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -79,20 +90,42 @@ export default function Login() {
             New here? <Link to={`/register${wanted === 'seller' ? '?role=seller' : ''}`} className="text-brand-600 hover:underline">Register</Link>
           </p>
 
-          <div className="mt-4 border-t border-gray-200 pt-3">
-            <p className="text-xs font-semibold text-ink mb-2">Demo users (click to fill)</p>
-            <table className="w-full text-xs">
-              <thead><tr className="text-left text-gray-500"><th className="font-normal">Role</th><th className="font-normal">User ID</th><th className="font-normal">Password</th></tr></thead>
-              <tbody>
-                {Object.entries(DEMO).filter(([r]) => !wanted || r === wanted).map(([r, d]) => (
-                  <tr key={r} className="cursor-pointer hover:bg-brand-50" onClick={() => { setUsername(d.username); setPassword(d.password) }}>
-                    <td className="py-1 capitalize">{r}</td><td className="font-mono">{d.username}</td><td className="font-mono">{d.password}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {!wanted && <p className="text-[11px] text-gray-400 mt-2">Use the Customer, Seller or Admin links above for a role-specific login.</p>}
-          </div>
+          {wanted === 'admin' ? (
+            <p className="mt-4 border-t border-gray-200 pt-3 text-[11px] text-gray-500">
+              Admin accounts are created in the connected database. There is no shared admin demo account.
+            </p>
+          ) : (
+            <div className="mt-4 border-t border-gray-200 pt-3">
+              <p className="text-xs font-semibold text-ink mb-2">Demo users (click to fill)</p>
+              <table className="w-full text-xs">
+                <thead><tr className="text-left text-gray-500"><th className="font-normal">Role</th><th className="font-normal">User ID</th><th className="font-normal">Password</th></tr></thead>
+                <tbody>
+                  {Object.entries(DEMO).filter(([r]) => !wanted || r === wanted).map(([r, d]) => (
+                    <tr
+                      key={r}
+                      className="cursor-pointer hover:bg-brand-50"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => { setUsername(d.username); setPassword(d.password) }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault()
+                          setUsername(d.username)
+                          setPassword(d.password)
+                        }
+                      }}
+                    >
+                      <td className="py-1 capitalize">{r}</td><td className="font-mono">{d.username}</td><td className="font-mono">{d.password}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="text-[11px] text-gray-400 mt-2">
+                These accounts work only when the sample dataset exists in the connected database. Vercel does not seed it automatically.
+              </p>
+              {!wanted && <p className="text-[11px] text-gray-400 mt-2">Use the Customer, Seller or Admin links above for a role-specific login.</p>}
+            </div>
+          )}
         </form>
       </div>
     </div>
